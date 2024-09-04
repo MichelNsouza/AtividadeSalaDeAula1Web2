@@ -10,15 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      mariadb:
-        image: mariadb:10.5
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: lojinha
-        ports:
-          - 3306:3306
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -30,16 +21,14 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Wait for MariaDB to be ready
+    - name: Configure MySQL remote database connection
       run: |
-        echo "Waiting for MariaDB to be ready..."
-        until mysqladmin ping -h "127.0.0.1" --silent; do
-          sleep 5
-        done
-        echo "MariaDB is ready!"
+        echo "spring.datasource.url=jdbc:mysql://<REMOTE_HOST>:<PORT>/<DATABASE_NAME>" >> src/main/resources/application.properties
+        echo "spring.datasource.username=<USERNAME>" >> src/main/resources/application.properties
+        echo "spring.datasource.password=<PASSWORD>" >> src/main/resources/application.properties
 
     - name: Build with Maven
-      run: mvn -B package --file pom.xml -X
+      run: mvn -B package --file pom.xml
 
     - name: Update dependency graph
       uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
