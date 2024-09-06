@@ -3,6 +3,7 @@ package br.com.unime.api1.service;
 import br.com.unime.api1.entities.Product;
 import br.com.unime.api1.exceptions.ResourceNotFoundException;
 import br.com.unime.api1.repository.ProductRepository;
+import br.com.unime.api1.requests.ProductNameResquest;
 import br.com.unime.api1.requests.ProductResquest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,28 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public Product update(Long id, ProductResquest productRequest) throws ResourceNotFoundException {
+
+        Product product =  this.getById(id);
+        product.setName(productRequest.getName());
+        product.setDescription(productRequest.getDescription());
+        product.setPrice(productRequest.getPrice());
+
+        return productRepository.save(product);
+    }
+
+    public Product update(Long id, ProductNameResquest productNameRequest) throws ResourceNotFoundException {
+
+        Product product =  this.getById(id);
+        product.setName(productNameRequest.getName());
+
+        return productRepository.save(product);
+    }
+
+    public void delete(Long id) throws ResourceNotFoundException {
+        Product product = this.getById(id);
+        productRepository.delete(product);
+    }
 
 
 }
